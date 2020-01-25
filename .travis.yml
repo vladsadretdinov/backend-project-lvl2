@@ -6,3 +6,4 @@
 
   script:
     - npx eslint .
+    - npm run test
