@@ -1,0 +1,47 @@
+{
+  "name": "hexlet-gendiff-vladsad",
+  "version": "1.0.0",
+  "description": "В рамках данного проекта необходимо реализовать утилиту для поиска отличий в конфигурационных файлах.",
+  "bin": {
+    "genDiff": "dist/bin/gendiff.js"
+  },
+  "main": "dist/bin/gendiff.js",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "commander": "^4.1.0",
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
+    "@babel/node": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
+    "lint": "npx eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vladsad/backend-project-lvl2.git"
+  },
+  "keywords": [
+    "gendiff",
+    "js",
+    "node",
+    "cli"
+  ],
+  "author": "Vladislav Sadretdinov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vladsad/backend-project-lvl2/issues"
+  },
+  "homepage": "https://github.com/vladsad/backend-project-lvl2#readme"
+}
