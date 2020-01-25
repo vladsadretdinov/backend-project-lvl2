@@ -6,6 +6,6 @@ test('dont exist after.json => result contain error message', () => {
     path.join(__dirname, '__fixtures__/json_6/before.json'),
     path.join(__dirname, '__fixtures__/json_6/after.json'),
   )).toEqual(
-    `Can't JSON parse file '${path.join(__dirname, '__fixtures__/json_6/before.json')}'`,
+    `Can't parse file '${path.join(__dirname, '__fixtures__/json_6/before.json')}'`,
   );
 });

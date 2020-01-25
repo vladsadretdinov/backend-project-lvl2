@@ -1,12 +1,6 @@
 /* eslint-disable no-param-reassign */
 
-import fs from 'fs';
-import path from 'path';
 import _ from 'lodash';
-
-const readFile = (pathToFile) => fs.readFileSync(pathToFile, 'utf8');
-
-const createPath = (pathToFile) => path.join(path.dirname(pathToFile), path.basename(pathToFile));
 
 const configExceptedByAnother = (config, excepted) => _.reduce(config, (acc, value, key) => {
   if (!_.has(excepted, key)) {
@@ -16,34 +10,17 @@ const configExceptedByAnother = (config, excepted) => _.reduce(config, (acc, val
 }, {});
 
 const genDiff = (firstConfigPath, secondConfigPath) => {
-  let firstConfigContent;
-  let secondConfigContent;
-  try {
-    firstConfigContent = readFile(createPath(firstConfigPath));
-  } catch (error) {
-    return `Can't read file '${firstConfigPath}'`;
-  }
-  try {
-    secondConfigContent = readFile(createPath(secondConfigPath));
-  } catch (error) {
-    return `Can't read file '${secondConfigPath}'`;
-  }
+  const { firstConfigAsJSON, secondConfigAsJSON, errorParse } = test(
+    firstConfigPath, secondConfigPath,
+  );
 
-  let firstConfigAsJSON;
-  let secondConfigAsJSON;
-  try {
-    firstConfigAsJSON = JSON.parse(firstConfigContent);
-  } catch (error) {
-    return `Can't JSON parse file '${firstConfigPath}'`;
-  }
-  try {
-    secondConfigAsJSON = JSON.parse(secondConfigContent);
-  } catch (error) {
-    return `Can't JSON parse file '${secondConfigPath}'`;
+  if (errorParse !== null) {
+    return errorParse;
   }
 
   const dataThatOnlyAtSecondConfig = configExceptedByAnother(secondConfigAsJSON,
     firstConfigAsJSON);
+
 
   let result = _.reduce(firstConfigAsJSON, (acc, value, key) => {
     if (_.has(secondConfigAsJSON, key)) {
