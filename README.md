@@ -1,3 +1,5 @@
+[![Maintainability](https://api.codeclimate.com/v1/badges/9519bb0572ce94f36585/maintainability)](https://codeclimate.com/github/vladsad/backend-project-lvl2/maintainability)
+
 ## GenDiff
 
 <details>
