@@ -1,4 +1,4 @@
-[![Maintainability](https://api.codeclimate.com/v1/badges/9519bb0572ce94f36585/maintainability)](https://codeclimate.com/github/vladsad/backend-project-lvl2/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/9519bb0572ce94f36585/maintainability)](https://codeclimate.com/github/vladsad/backend-project-lvl2/maintainability)[![Build Status](https://travis-ci.org/vladsad/backend-project-lvl2.svg?branch=master)](https://travis-ci.org/vladsad/backend-project-lvl2)
 
 ## GenDiff
 
