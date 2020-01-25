@@ -1,0 +1,8 @@
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In /Users/vladislav/Projects/teaching/backend-project-lvl2
+  26 files checked.
+  testMatch: **/__tests__/**/*.[jt]s?(x), **/?(*.)+(spec|test).[tj]s?(x) - 1 match
+  testPathIgnorePatterns: /node_modules/ - 26 matches
+  testRegex:  - 0 matches
+Pattern: empty|before.json|=|contain|only|after.json|elements - 0 matches
