@@ -24,6 +24,8 @@ const genDiff = (firstConfigPath, secondConfigPath) => {
   const dataThatOnlyAtSecondConfig = configExceptedByAnother(secondConfigAsJSON,
     firstConfigAsJSON);
 
+  console.log(dataThatOnlyAtSecondConfig);
+
   let result = _.reduce(firstConfigAsJSON, (acc, value, key) => {
     if (_.has(secondConfigAsJSON, key)) {
       if (firstConfigAsJSON[key] === secondConfigAsJSON[key]) {
