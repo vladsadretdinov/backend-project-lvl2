@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import _ from 'lodash';
+import parseFilesAsJSON from './parsers';
 
 const configExceptedByAnother = (config, excepted) => _.reduce(config, (acc, value, key) => {
   if (!_.has(excepted, key)) {
@@ -10,17 +11,18 @@ const configExceptedByAnother = (config, excepted) => _.reduce(config, (acc, val
 }, {});
 
 const genDiff = (firstConfigPath, secondConfigPath) => {
-  const { firstConfigAsJSON, secondConfigAsJSON, errorParse } = test(
-    firstConfigPath, secondConfigPath,
-  );
+  const {
+    firstFileAsJSON: firstConfigAsJSON,
+    secondFileAsJSON: secondConfigAsJSON,
+    parseError,
+  } = parseFilesAsJSON(firstConfigPath, secondConfigPath);
 
-  if (errorParse !== null) {
-    return errorParse;
+  if (parseError !== null) {
+    return parseError;
   }
 
   const dataThatOnlyAtSecondConfig = configExceptedByAnother(secondConfigAsJSON,
     firstConfigAsJSON);
-
 
   let result = _.reduce(firstConfigAsJSON, (acc, value, key) => {
     if (_.has(secondConfigAsJSON, key)) {

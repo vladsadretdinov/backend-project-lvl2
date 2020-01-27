@@ -1,125 +1,124 @@
 import fs from 'fs';
 import path from 'path';
+import { safeLoad } from 'js-yaml';
 
-const readFile = (pathToFile) => fs.readFileSync(pathToFile, 'utf8');
+const readFile = (pathToFile) => {
+  try {
+    return {
+      fileContent: fs.readFileSync(pathToFile, 'utf8'),
+      fileContentError: null,
+    };
+  } catch (error) {
+    return {
+      fileContent: null,
+      fileContentError: `Can't read file '${pathToFile}'`,
+    };
+  }
+};
 
 const createPath = (pathToFile) => path.join(path.dirname(pathToFile), path.basename(pathToFile));
 
-const isFileFormatsEqual = (firstConfigFormat, secondConfigFormat) => (
-  firstConfigFormat === secondConfigFormat
-);
-
 const isFileFormatSupported = (fileFormat) => {
-  const supportedFileFormats = ['json', 'yaml'];
+  const supportedFileFormats = ['.json', '.yaml'];
   return supportedFileFormats.includes(fileFormat);
 };
 
-const getFilesFormat = (firstConfigPath, secondConfigPath) => {
-  const firstConfigFormat = path.extname(firstConfigPath);
-  const secondConfigFormat = path.extname(secondConfigPath);
-  const response = {};
-
-  if (!isFileFormatSupported(firstConfigPath)) {
-    response.update({
-      format: null,
-      error: `First file has unsupported format '.${firstConfigFormat}'`,
-    });
-  } else if (!isFileFormatSupported(secondConfigPath)) {
-    response.update({
-      format: null,
-      error: `Second file has unsupported format '.${secondConfigPath}'`,
-    });
+const getParsedContentAsJSON = (content, format) => {
+  try {
+    return {
+      contentAsJSON: format === '.json' ? JSON.parse(content) : safeLoad(content),
+      contentAsJSONError: null,
+    };
+  } catch (error) {
+    return {
+      contentAsJSON: null,
+      contentAsJSONError: error,
+    };
   }
-
-  if (!isFileFormatsEqual(firstConfigFormat, secondConfigFormat)) {
-    response.update({
-      format: null,
-      error: 'File formats must be equal',
-    });
-  } else if (firstConfigPath === 'json') {
-    response.update({
-      format: 'json',
-      error: null,
-    });
-  } else {
-    response.update({
-      format: 'yaml',
-      error: null,
-    });
-  }
-
-  return response;
 };
 
-const getConfigAsJSON = (config) => {
 
+const getFileFormat = (filePath) => {
+  const fileFormat = path.extname(filePath);
+  if (!isFileFormatSupported(fileFormat)) {
+    return {
+      fileFormat: null,
+      fileFormatError: `File '${filePath}' has unsupported format`,
+    };
+  }
+  return {
+    fileFormat,
+    fileFormatError: null,
+  };
 };
 
-export default (firstConfigPath, secondConfigPath) => {
-  const response = {
-    firstConfigAsJSON: null,
-    secondConfigAsJSON: null,
-    errorParse: null,
+export default (firstFilePath, secondFilePath) => {
+  const parserResponse = {
+    firstFileAsJSON: null,
+    secondFileAsJSON: null,
+    parseError: null,
   };
 
-  const { format: filesFormat, error: errorFilesFormat } = getFilesFormat(
-    firstConfigPath, secondConfigPath,
-  );
+  const {
+    fileFormat: firstFileFormat,
+    fileFormatError: firstFileFormatError,
+  } = getFileFormat(firstFilePath);
 
-  if (errorFilesFormat === null) {
-    response.update({
-      errorParse: errorFilesFormat,
-    });
-    return response;
+  if (firstFileFormatError !== null) {
+    return { ...parserResponse, parseError: firstFileFormatError };
   }
+  console.log(`First file has '${firstFileFormat}' format`);
 
-  let firstConfigContent;
-  let secondConfigContent;
+  const {
+    fileFormat: secondFileFormat,
+    fileFormatError: secondFileFormatError,
+  } = getFileFormat(secondFilePath);
 
-  try {
-    firstConfigContent = readFile(createPath(firstConfigPath));
-    console.log('First file read successfully');
-  } catch (error) {
-    response.update({
-      errorParse: `Can't read file '${firstConfigPath}'`,
-    });
-    return response;
+  if (secondFileFormatError !== null) {
+    return { ...parserResponse, parseError: secondFileFormatError };
   }
-  try {
-    secondConfigContent = readFile(createPath(secondConfigPath));
-    console.log('Second file read successfully');
-  } catch (error) {
-    response.update({
-      errorParse: `Can't read file '${secondConfigPath}'`,
-    });
-    return response;
-  }
+  console.log(`Second file has '${secondFileFormat}' format`);
 
-  let firstConfigAsJSON;
-  let secondConfigAsJSON;
-  try {
-    firstConfigAsJSON = JSON.parse(firstConfigContent);
-    console.log('First file parsed successfully');
-  } catch (error) {
-    response.update({
-      errorParse: `Can't parse file '${firstConfigPath}'`,
-    });
-    return response;
-  }
-  try {
-    secondConfigAsJSON = JSON.parse(secondConfigContent);
-    console.log('Second file parsed successfully');
-  } catch (error) {
-    response.update({
-      errorParse: `Can't parse file '${secondConfigPath}'`,
-    });
-    return response;
-  }
 
-  response.update = {
-    firstConfigAsJSON,
-    secondConfigAsJSON,
-  };
+  const {
+    fileContent: firstFileContent,
+    fileContentError: firstFileContentError,
+  } = readFile(createPath(firstFilePath));
 
-  return response;
+  if (firstFileContentError !== null) {
+    return { ...parserResponse, parseError: firstFileContentError };
+  }
+  console.log('First file read successfully');
+
+  const {
+    fileContent: secondFileContent,
+    fileContentError: secondFileContentError,
+  } = readFile(createPath(secondFilePath));
+
+  if (secondFileContentError !== null) {
+    return { ...parserResponse, parseError: secondFileContentError };
+  }
+  console.log('Second file read successfully');
+
+
+  const {
+    contentAsJSON: firstFileAsJSON,
+    contentAsJSONError: firstFileAsJSONError,
+  } = getParsedContentAsJSON(firstFileContent, firstFileFormat);
+
+  if (firstFileAsJSONError !== null) {
+    return { ...parserResponse, parseError: `Can't parse file '${firstFilePath}' as JSON` };
+  }
+  console.log('First file parsed as JSON successfully');
+
+  const {
+    contentAsJSON: secondFileAsJSON,
+    contentAsJSONError: secondFileAsJSONError,
+  } = getParsedContentAsJSON(secondFileContent, secondFileFormat);
+  if (secondFileAsJSONError !== null) {
+    return { ...parserResponse, parseError: `Can't parse file '${secondFilePath}' as JSON` };
+  }
+  console.log('Second file parsed as JSON successfully');
+
+  return { ...parserResponse, firstFileAsJSON, secondFileAsJSON };
 };
