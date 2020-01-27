@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { safeLoad } from 'js-yaml';
+import { safeLoad as yamlParse } from 'js-yaml';
+import { parse as iniParse } from 'ini';
 
 const readFile = (pathToFile) => {
   try {
@@ -19,14 +20,26 @@ const readFile = (pathToFile) => {
 const createPath = (pathToFile) => path.join(path.dirname(pathToFile), path.basename(pathToFile));
 
 const isFileFormatSupported = (fileFormat) => {
-  const supportedFileFormats = ['.json', '.yaml'];
+  const supportedFileFormats = ['.json', '.yaml', '.ini'];
   return supportedFileFormats.includes(fileFormat);
 };
 
 const getParsedContentAsJSON = (content, format) => {
   try {
+    let contentAsJSON;
+    switch (format) {
+      case '.ini':
+        contentAsJSON = iniParse(content);
+        break;
+      case '.yaml':
+        contentAsJSON = yamlParse(content);
+        break;
+      default:
+        contentAsJSON = JSON.parse(content);
+        break;
+    }
     return {
-      contentAsJSON: format === '.json' ? JSON.parse(content) : safeLoad(content),
+      contentAsJSON,
       contentAsJSONError: null,
     };
   } catch (error) {
