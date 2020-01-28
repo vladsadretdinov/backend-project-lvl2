@@ -1,12 +1,24 @@
-import fs from 'fs';
-import path from 'path';
+import { readFileSync as fsReadFileSync } from 'fs';
+import {
+  join as pathJoin,
+  dirname as pathDirname,
+  basename as pathBasename,
+  extname as pathExtname,
+} from 'path';
+import { has as _has } from 'lodash';
 import { safeLoad as yamlParse } from 'js-yaml';
 import { parse as iniParse } from 'ini';
+
+const SUPPORTED_FILE_FORMATS = {
+  yaml: yamlParse,
+  json: JSON.parse,
+  ini: iniParse,
+};
 
 const readFile = (pathToFile) => {
   try {
     return {
-      fileContent: fs.readFileSync(pathToFile, 'utf8'),
+      fileContent: fsReadFileSync(pathToFile, 'utf8'),
       fileContentError: null,
     };
   } catch (error) {
@@ -17,29 +29,14 @@ const readFile = (pathToFile) => {
   }
 };
 
-const createPath = (pathToFile) => path.join(path.dirname(pathToFile), path.basename(pathToFile));
+const createPath = (pathToFile) => pathJoin(pathDirname(pathToFile), pathBasename(pathToFile));
 
-const isFileFormatSupported = (fileFormat) => {
-  const supportedFileFormats = ['.json', '.yaml', '.ini'];
-  return supportedFileFormats.includes(fileFormat);
-};
+const isFileFormatSupported = (format) => _has(SUPPORTED_FILE_FORMATS, format);
 
 const getParsedContentAsJSON = (content, format) => {
   try {
-    let contentAsJSON;
-    switch (format) {
-      case '.ini':
-        contentAsJSON = iniParse(content);
-        break;
-      case '.yaml':
-        contentAsJSON = yamlParse(content);
-        break;
-      default:
-        contentAsJSON = JSON.parse(content);
-        break;
-    }
     return {
-      contentAsJSON,
+      contentAsJSON: SUPPORTED_FILE_FORMATS[format](content),
       contentAsJSONError: null,
     };
   } catch (error) {
@@ -52,7 +49,7 @@ const getParsedContentAsJSON = (content, format) => {
 
 
 const getFileFormat = (filePath) => {
-  const fileFormat = path.extname(filePath);
+  const fileFormat = pathExtname(filePath).substring(1);
   if (!isFileFormatSupported(fileFormat)) {
     return {
       fileFormat: null,

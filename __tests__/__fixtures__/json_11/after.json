@@ -1,0 +1,8 @@
+{
+  "common": {
+    "setting6": {
+      "key": "value",
+      "ops": "vops"
+    }
+  }
+}
