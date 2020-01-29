@@ -7,6 +7,6 @@ test('good yaml files => good results', () => {
     path.join(__dirname, '__fixtures__/yaml_1/before.yaml'),
     path.join(__dirname, '__fixtures__/yaml_1/after.yaml'),
   )).toEqual(
-    JSON.parse(fs.readFileSync(path.join(__dirname, '__fixtures__/yaml_1/result.yaml'), 'utf8')).result,
+    JSON.parse(fs.readFileSync(path.join(__dirname, '__fixtures__/yaml_1/result.json'), 'utf8')).result,
   );
 });

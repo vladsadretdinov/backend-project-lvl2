@@ -1,34 +1,12 @@
-{
-  common: {
-    + follow: false
-      setting1: Value 1
-    - setting2: 200
-    - setting3: true
-    + setting3: {
-          key: value
-      }
-      setting6: {
-          key: value
-        + ops: vops
-      }
-    + setting4: blah blah
-    + setting5: {
-          key5: value5
-      }
-  }
-  group1: {
-    + baz: bars
-    - baz: bas
-      foo: bar
-    - nest: {
-          key: value
-      }
-    + nest: str
-  }
-- group2: {
-      abc: 12345
-  }
-+ group3: {
-      fee: 100500
-  }
-}
+import path from 'path';
+import fs from 'fs';
+import genDiff from '../src/genDiff';
+
+test('good nested json structure => good results', () => {
+  expect(genDiff(
+    path.join(__dirname, '__fixtures__/json_10/before.json'),
+    path.join(__dirname, '__fixtures__/json_10/after.json'),
+  )).toEqual(
+    JSON.parse(fs.readFileSync(path.join(__dirname, '__fixtures__/json_10/result.json'), 'utf8')).result,
+  );
+});

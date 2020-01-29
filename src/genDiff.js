@@ -1,70 +1,104 @@
 /* eslint-disable no-param-reassign */
 
-import _ from 'lodash';
+import {
+  has as _has,
+  reduce as _reduce,
+  // forEach as _forEach,
+} from 'lodash';
 import parseFilesAsJSON from './parsers';
-
-// const getASTWithoutAddedElements = (firstJSON, secondJSON) => _.reduce(
-//   firstJSON, (acc, value, key) => {
-//     acc.push({ key });
-//     if (_.has(secondJSON, key)) {
-//       acc[acc.length - 1].state = 'same';
-//       if (typeof value === 'object' && typeof secondJSON[key] === 'object') {
-//         acc[acc.length - 1].children = getASTWithoutAddedElements(value, secondJSON[key]);
-//         return acc;
-//       }
-//       if (typeof value === 'object' || typeof secondJSON[key] === 'object') {
-//         acc[acc.length - 1].state = 'changed';
-//         acc[acc.length - 1].key = key;
-//         acc[acc.length - 1].value = value;
-//         acc[acc.length - 1].afterValue = secondJSON[key];
-//         return acc;
-//       }
-//     }
-//     if (typeof value !== 'object' && typeof secondJSON[key] !== 'object') {
-//       acc[acc.length - 1].state = value === secondJSON[key] ? 'same' : 'changed';
-//       acc[acc.length - 1].key = key;
-//       acc[acc.length - 1].value = value;
-//       if (value !== secondJSON[key]) {
-//         acc[acc.length - 1].afterValue = secondJSON[key];
-//       }
-//       acc[acc.length - 1].state = secondJSON[key] === undefined ? 'deleted' : acc[acc.length - 1].state;
-//       if (acc[acc.length - 1].state === 'deleted') {
-//         delete acc[acc.length - 1].afterValue;
-//       }
-//       return acc;
-//     }
-//     acc[acc.length - 1].key = key;
-//     acc[acc.length - 1].state = 'deleted';
-//     if (typeof value === 'object') {
-//       acc[acc.length - 1].children = value;
-//     } else {
-//       acc[acc.length - 1].value = value;
-//     }
-//     return acc;
-//   }, [],
-// console.log(mergedJSON);
-// );
 
 const getAST = (firstJSON, secondJSON) => {
   const mergedJSON = { ...firstJSON, ...secondJSON };
-  const result = _.reduce(mergedJSON, (acc, value, key) => {
-    if (_.has(firstJSON, key) && _.has(secondJSON, key)) {
-      if (firstJSON[key] === value) {
-        acc += `    ${key}: ${value}\n`;
-      } else {
-        acc += `  - ${key}: ${firstJSON[key]}\n`;
-        acc += `  + ${key}: ${value}\n`;
+  const result = _reduce(mergedJSON, (acc, value, key) => {
+    if (_has(firstJSON, key) && _has(secondJSON, key)) {
+      if ((typeof value === typeof firstJSON[key]) && typeof value === 'object') {
+        acc.push({
+          key,
+          state: 'same',
+          children: getAST(firstJSON[key], value),
+        });
+        return acc;
       }
+      if ((typeof value !== 'object') && (typeof firstJSON[key] !== 'object')) {
+        if (value === firstJSON[key]) {
+          acc.push({
+            key,
+            state: 'same',
+            value,
+          });
+          return acc;
+        }
+      }
+      acc.push({
+        key,
+        state: 'changed',
+        beforeValue: firstJSON[key],
+        afterValue: value,
+      });
       return acc;
-    } if (_.has(secondJSON, key)) {
-      acc += `  + ${key}: ${value}\n`;
+    } if (_has(secondJSON, key)) {
+      acc.push({
+        key,
+        state: 'added',
+        value,
+      });
       return acc;
     }
-    acc += `  - ${key}: ${value}\n`;
+    acc.push({
+      key,
+      state: 'deleted',
+      value,
+    });
     return acc;
-  }, '{\n');
-  return `${result}}`;
+  }, []);
+  return result;
 };
+
+// const getASTValueToPrint = (value) => {
+//   if (typeof value !== 'object') {
+//     return `${value}\n`;
+//   }
+//   return `{\n        ${value.key}: ${value.value}`;
+// };
+
+// const renderedAST = (ast) => ast.reduce((acc, value) => {
+//   switch (value.state) {
+//     case 'same':
+//       acc += `    ${value.key}: `;
+//       return acc;
+//     case 'deleted':
+//       acc += `\n  - ${value.key}: `;
+//       if (typeof value.value !== 'object') {
+//         acc += `${value.value}`;
+//       } else {
+//         acc += '{\n';
+//         _forEach(value.value, (v, k) => {
+//           acc += `        ${k}: ${v}\n`;
+//         });
+//         acc += '    }';
+//       }
+//       return acc;
+//     case 'changed':
+//       acc += `  - ${value.key}: `;
+//       acc += `  + ${value.key}: `;
+//       return acc;
+//     case 'added':
+//       acc += `\n  + ${value.key}: `;
+//       if (typeof value.value !== 'object') {
+//         acc += `${value.value}`;
+//       } else {
+//         acc += '{\n';
+//         _forEach(value.value, (v, k) => {
+//           acc += `        ${k}: ${v}\n`;
+//         });
+//         acc += '    }';
+//       }
+//       return acc;
+//     default:
+//       acc += `    ${value.key}: `;
+//       return acc;
+//   }
+// }, '{\n');
 
 const genDiff = (firstConfigPath, secondConfigPath) => {
   const {
@@ -79,9 +113,13 @@ const genDiff = (firstConfigPath, secondConfigPath) => {
 
   const result = getAST(firstConfigAsJSON, secondConfigAsJSON);
 
-  console.log('------otvet-------');
-  console.log(JSON.stringify(result));
-  console.log('------otvet-------');
+  // console.log('------otvet-------');
+  // console.log(JSON.stringify(result));
+  // console.log('------otvet-------');
+
+  // console.log('------otvet2-------');
+  // console.log(JSON.stringify(res2));
+  // console.log('------otvet2-------');
 
   return result;
 };
