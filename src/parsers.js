@@ -47,7 +47,6 @@ const getParsedContentAsJSON = (content, format) => {
   }
 };
 
-
 const getFileFormat = (filePath) => {
   const fileFormat = pathExtname(filePath).substring(1);
   if (!isFileFormatSupported(fileFormat)) {
@@ -75,7 +74,10 @@ export default (firstFilePath, secondFilePath) => {
   } = getFileFormat(firstFilePath);
 
   if (firstFileFormatError !== null) {
-    return { ...parserResponse, parseError: firstFileFormatError };
+    return {
+      ...parserResponse,
+      parseError: firstFileFormatError,
+    };
   }
   console.log(`First file has '${firstFileFormat}' format`);
 
@@ -85,10 +87,12 @@ export default (firstFilePath, secondFilePath) => {
   } = getFileFormat(secondFilePath);
 
   if (secondFileFormatError !== null) {
-    return { ...parserResponse, parseError: secondFileFormatError };
+    return {
+      ...parserResponse,
+      parseError: secondFileFormatError,
+    };
   }
   console.log(`Second file has '${secondFileFormat}' format`);
-
 
   const {
     fileContent: firstFileContent,
@@ -96,7 +100,10 @@ export default (firstFilePath, secondFilePath) => {
   } = readFile(createPath(firstFilePath));
 
   if (firstFileContentError !== null) {
-    return { ...parserResponse, parseError: firstFileContentError };
+    return {
+      ...parserResponse,
+      parseError: firstFileContentError,
+    };
   }
   console.log('First file read successfully');
 
@@ -106,10 +113,12 @@ export default (firstFilePath, secondFilePath) => {
   } = readFile(createPath(secondFilePath));
 
   if (secondFileContentError !== null) {
-    return { ...parserResponse, parseError: secondFileContentError };
+    return {
+      ...parserResponse,
+      parseError: secondFileContentError,
+    };
   }
   console.log('Second file read successfully');
-
 
   const {
     contentAsJSON: firstFileAsJSON,
@@ -117,7 +126,10 @@ export default (firstFilePath, secondFilePath) => {
   } = getParsedContentAsJSON(firstFileContent, firstFileFormat);
 
   if (firstFileAsJSONError !== null) {
-    return { ...parserResponse, parseError: `Can't parse file '${firstFilePath}' as JSON` };
+    return {
+      ...parserResponse,
+      parseError: `Can't parse file '${firstFilePath}' as JSON`,
+    };
   }
   console.log('First file parsed as JSON successfully');
 
@@ -125,10 +137,18 @@ export default (firstFilePath, secondFilePath) => {
     contentAsJSON: secondFileAsJSON,
     contentAsJSONError: secondFileAsJSONError,
   } = getParsedContentAsJSON(secondFileContent, secondFileFormat);
+
   if (secondFileAsJSONError !== null) {
-    return { ...parserResponse, parseError: `Can't parse file '${secondFilePath}' as JSON` };
+    return {
+      ...parserResponse,
+      parseError: `Can't parse file '${secondFilePath}' as JSON`,
+    };
   }
   console.log('Second file parsed as JSON successfully');
 
-  return { ...parserResponse, firstFileAsJSON, secondFileAsJSON };
+  return {
+    ...parserResponse,
+    firstFileAsJSON,
+    secondFileAsJSON,
+  };
 };

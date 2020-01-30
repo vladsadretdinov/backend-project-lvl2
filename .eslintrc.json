@@ -1,0 +1,23 @@
+{
+  "extends": ["airbnb-base"],
+  "plugins": ["prettier"],
+  "rules": {
+    "no-console": 0
+  },
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "parser": "babel-eslint"
+}
+
+// ,
+//     "linebreak-style": "off",
+//     "arrow-parens": "off",
+//     "arrow-body-style": "off",
+//     "prettier/prettier": ["error"],
+//     "no-mixed-operators": "off",
+//     "function-paren-newline": "off",
+//     "no-plusplus": "off",
+//     "space-before-function-paren": "off",
+//     "object-curly-newline": "off"
