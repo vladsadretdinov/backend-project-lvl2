@@ -1,5 +1,6 @@
 import commander from 'commander';
 import genDiff from './genDiff';
+import formatFacade, { isValidFormat } from './formatters';
 
 export default () => {
   const program = commander;
@@ -10,8 +11,11 @@ export default () => {
     .option('-f, --format [type]', 'output format')
     .arguments('<firstConfig> <secondConfig>')
     .action((firstConfigPath, secondConfigPath, cmdObj) => {
-      console.log(cmdObj.format);
-      console.log(genDiff(firstConfigPath, secondConfigPath, cmdObj.format));
+      if (!isValidFormat(cmdObj.format)) {
+        console.log(`Invalid option "-f ${cmdObj.format}", please retry!`);
+      } else {
+        console.log(genDiff(firstConfigPath, secondConfigPath, formatFacade(cmdObj.format)));
+      }
     });
 
   program.parse(process.argv);
