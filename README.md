@@ -23,6 +23,10 @@
 </details>
 
 <details>
-<summary>GenDiff Nested '.JSON' Structure Demonstration Plus Option "-f plain"</summary>
+<summary>GenDiff Nested '.JSON' Structure Demonstration With Option "-f plain"</summary>
 <a href="https://asciinema.org/a/i816z8rC7fMxQtST5t6csVhFN" target="_blank"><img src="https://asciinema.org/a/i816z8rC7fMxQtST5t6csVhFN.svg" /></a>
+</details>
+<details>
+<summary>GenDiff Nested '.JSON' Structure Demonstration With Option "-f json"</summary>
+<a href="https://asciinema.org/a/1ea8GPEsfT1oUiKjzD2So3Rmg" target="_blank"><img src="https://asciinema.org/a/1ea8GPEsfT1oUiKjzD2So3Rmg.svg" /></a>
 </details>

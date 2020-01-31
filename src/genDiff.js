@@ -72,6 +72,8 @@ const genDiff = (firstConfigPath, secondConfigPath, outputFormat = standard) => 
 
   const ast = getAST(firstConfigAsJSON, secondConfigAsJSON);
 
+  console.log('----Result----');
+
   return outputFormat(ast);
 };
 
