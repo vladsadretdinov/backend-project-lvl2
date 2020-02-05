@@ -79,7 +79,6 @@ export default (firstFilePath, secondFilePath) => {
       parseError: firstFileFormatError,
     };
   }
-  console.log(`First file has '${firstFileFormat}' format`);
 
   const {
     fileFormat: secondFileFormat,
@@ -92,7 +91,6 @@ export default (firstFilePath, secondFilePath) => {
       parseError: secondFileFormatError,
     };
   }
-  console.log(`Second file has '${secondFileFormat}' format`);
 
   const {
     fileContent: firstFileContent,
@@ -105,7 +103,6 @@ export default (firstFilePath, secondFilePath) => {
       parseError: firstFileContentError,
     };
   }
-  console.log('First file read successfully');
 
   const {
     fileContent: secondFileContent,
@@ -118,7 +115,6 @@ export default (firstFilePath, secondFilePath) => {
       parseError: secondFileContentError,
     };
   }
-  console.log('Second file read successfully');
 
   const {
     contentAsJSON: firstFileAsJSON,
@@ -131,7 +127,6 @@ export default (firstFilePath, secondFilePath) => {
       parseError: `Can't parse file '${firstFilePath}' as JSON`,
     };
   }
-  console.log('First file parsed as JSON successfully');
 
   const {
     contentAsJSON: secondFileAsJSON,
@@ -144,7 +139,6 @@ export default (firstFilePath, secondFilePath) => {
       parseError: `Can't parse file '${secondFilePath}' as JSON`,
     };
   }
-  console.log('Second file parsed as JSON successfully');
 
   return {
     ...parserResponse,

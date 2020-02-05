@@ -1,23 +1,25 @@
-import commander from 'commander';
-import genDiff from './genDiff';
-import formatFacade, { isValidFormat } from './formatters';
+import getRenderStyle, { isValidFormat } from './formatters';
+import parseFilesAsJSON from './parsers';
+import getAST from './getAST';
 
-export default () => {
-  const program = commander;
+export default (firstConfigPath, secondConfigPath, format) => {
+  if (!isValidFormat(format)) {
+    return `Invalid option "-f ${format}", please retry!`;
+  }
 
-  program
-    .version('0.1.0')
-    .description('Compares two configuration files and shows a difference.')
-    .option('-f, --format [type]', 'output format')
-    .arguments('<firstConfig> <secondConfig>')
-    .action((firstConfigPath, secondConfigPath, cmdObj) => {
-      if (!isValidFormat(cmdObj.format)) {
-        console.log(`Invalid option "-f ${cmdObj.format}", please retry!`);
-      } else {
-        console.log(genDiff(firstConfigPath, secondConfigPath, formatFacade(cmdObj.format)));
-      }
-    });
+  const {
+    firstFileAsJSON: firstConfigAsJSON,
+    secondFileAsJSON: secondConfigAsJSON,
+    parseError,
+  } = parseFilesAsJSON(firstConfigPath, secondConfigPath);
 
-  program.parse(process.argv);
-  process.exit(0);
+  if (parseError !== null) {
+    return parseError;
+  }
+
+  const ast = getAST(firstConfigAsJSON, secondConfigAsJSON);
+
+  const render = getRenderStyle(format);
+
+  return render(ast);
 };

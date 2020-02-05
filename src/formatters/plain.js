@@ -13,10 +13,11 @@ export default (_ast) => {
   const render = (ast, parent) => ast.reduce((acc, element) => {
     const value = renderHelper(element.value);
     const beforeValue = renderHelper(element.beforeValue);
+    const afterValue = renderHelper(element.afterValue);
 
     switch (element.state) {
       case 'changed':
-        acc += `Property '${parent}${element.key}' was changed from ${beforeValue} to ${value}`;
+        acc += `Property '${parent}${element.key}' was changed from ${beforeValue} to ${afterValue}`;
         acc += '\n';
         break;
       case 'deleted':

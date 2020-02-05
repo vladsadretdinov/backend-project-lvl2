@@ -6,6 +6,7 @@ import json from './json';
 const SUPPORTED_OUTPUT_FORMATS = {
   true: standard,
   undefined: standard,
+  standard,
   json,
   plain,
 };

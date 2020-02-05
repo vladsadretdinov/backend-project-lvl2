@@ -1,8 +1,6 @@
 /* eslint-disable no-param-reassign */
 
 import { has as _has, reduce as _reduce } from 'lodash';
-import parseFilesAsJSON from './parsers';
-import standard from './formatters/standard';
 
 const getAST = (firstJSON, secondJSON) => {
   const mergedJSON = {
@@ -35,7 +33,7 @@ const getAST = (firstJSON, secondJSON) => {
           key,
           state: 'changed',
           beforeValue: firstJSON[key],
-          value,
+          afterValue: value,
         });
         return acc;
       }
@@ -59,22 +57,4 @@ const getAST = (firstJSON, secondJSON) => {
   return result;
 };
 
-const genDiff = (firstConfigPath, secondConfigPath, outputFormat = standard) => {
-  const {
-    firstFileAsJSON: firstConfigAsJSON,
-    secondFileAsJSON: secondConfigAsJSON,
-    parseError,
-  } = parseFilesAsJSON(firstConfigPath, secondConfigPath);
-
-  if (parseError !== null) {
-    return parseError;
-  }
-
-  const ast = getAST(firstConfigAsJSON, secondConfigAsJSON);
-
-  console.log('----Result----');
-
-  return outputFormat(ast);
-};
-
-export default genDiff;
+export default getAST;

@@ -28,7 +28,7 @@ export default (_ast) => {
     switch (element.state) {
       case 'changed':
         acc += renderHelper('-', element.key, element.beforeValue, tabs);
-        acc += renderHelper('+', element.key, element.value, tabs);
+        acc += renderHelper('+', element.key, element.afterValue, tabs);
         break;
       case 'deleted':
         acc += renderHelper('-', element.key, element.value, tabs);
