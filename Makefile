@@ -1,7 +1,7 @@
 install: install-deps
 
 run:
-	npx run start
+	npm run start
 
 install-deps:
 	npm install
@@ -14,4 +14,4 @@ test:
 	npm test
 
 lint:
-	npm run lint
+	npx eslint .

@@ -1,9 +1,23 @@
 import path from 'path';
 import fs from 'fs';
 import genDiff from '../src';
+import { isValidFormat } from '../src/formatters';
 
 const getFixturePath = (filename) => path.join(__dirname, '__fixtures__', filename);
 const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
+
+describe('Check formatters', () => {
+  test.each([
+    [undefined, true],
+    [true, true],
+    ['standard', true],
+    ['json', true],
+    ['plain', true],
+    ['my-format', false],
+  ])('isValidFormat(%s)', (format, expectedExpression) => {
+    expect(isValidFormat(format)).toEqual(expectedExpression);
+  });
+});
 
 describe('Valid input data => good result', () => {
   test.each([
@@ -19,9 +33,6 @@ describe('Valid input data => good result', () => {
 
 describe('Invalid input data => error message', () => {
   test.each([
-    ['before.json', 'after.json', 'error-format',
-      'Invalid option "-f error-format", please retry!',
-    ],
     ['before.json', 'invalid_input.json', 'standard',
       `Can't parse file '${getFixturePath('invalid_input.json')}' as JSON`,
     ],

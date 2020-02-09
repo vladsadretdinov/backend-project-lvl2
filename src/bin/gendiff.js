@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import commander from 'commander';
-import genDiff from '../index';
+import { isValidFormat } from '../formatters';
+import genDiff from '..';
 
 const program = commander;
 
@@ -11,8 +12,10 @@ program
   .option('-f, --format [type]', 'output format')
   .arguments('<firstConfig> <secondConfig>')
   .action((firstConfigPath, secondConfigPath, cmdObj) => {
+    if (!isValidFormat(cmdObj.format)) {
+      console.log(`Invalid option "-f ${cmdObj.format}", please retry!`);
+    }
     console.log(genDiff(firstConfigPath, secondConfigPath, cmdObj.format));
   });
 
 program.parse(process.argv);
-process.exit(0);
