@@ -5,37 +5,12 @@ import {
   basename as pathBasename,
   extname as pathExtname,
 } from 'path';
-import { isFormatSupported } from './supportedFileFormats';
 
-export const readFile = (pathToFile) => {
-  try {
-    return {
-      fileContent: fsReadFileSync(pathToFile, 'utf8'),
-      fileContentError: null,
-    };
-  } catch (error) {
-    return {
-      fileContent: null,
-      fileContentError: `Can't read file '${pathToFile}'`,
-    };
-  }
-};
+export const readFile = (pathToFile) => fsReadFileSync(pathToFile, 'utf8');
 
-export const createPath = (pathToFile) => pathJoin(
+export const createFullFilePath = (pathToFile) => pathJoin(
   pathDirname(pathToFile),
   pathBasename(pathToFile),
 );
 
-export const getFileFormat = (filePath) => {
-  const fileFormat = pathExtname(filePath).substring(1);
-  if (!isFormatSupported(fileFormat)) {
-    return {
-      fileFormat: null,
-      fileFormatError: `File '${filePath}' has unsupported format`,
-    };
-  }
-  return {
-    fileFormat,
-    fileFormatError: null,
-  };
-};
+export const getFileFormat = (filePath) => pathExtname(filePath).substring(1);

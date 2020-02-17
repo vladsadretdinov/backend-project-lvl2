@@ -3,7 +3,7 @@ import standard from './standard';
 import plain from './plain';
 import json from './json';
 
-const SUPPORTED_OUTPUT_FORMATS = {
+const SUPPORTED_OUTPUT_FORMATS_MAP = {
   true: standard,
   undefined: standard,
   standard,
@@ -11,6 +11,6 @@ const SUPPORTED_OUTPUT_FORMATS = {
   plain,
 };
 
-export const isValidFormat = (format) => format !== 'true' && _has(SUPPORTED_OUTPUT_FORMATS, format);
+export const isValidFormat = (format) => format !== 'true' && _has(SUPPORTED_OUTPUT_FORMATS_MAP, format);
 
-export default (format) => SUPPORTED_OUTPUT_FORMATS[format];
+export default (format) => SUPPORTED_OUTPUT_FORMATS_MAP[format];

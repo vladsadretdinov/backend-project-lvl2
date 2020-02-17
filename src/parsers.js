@@ -1,27 +1,15 @@
-import { getParserByFormat } from './supportedFileFormats';
+import { safeLoad as yamlParse } from 'js-yaml';
+import { parse as iniParse } from 'ini';
 
-const getContentAsJSON = (content, format) => {
-  try {
-    return {
-      contentAsJSON: getParserByFormat(format)(content),
-      contentAsJSONError: null,
-    };
-  } catch (error) {
-    return {
-      contentAsJSON: null,
-      contentAsJSONError: error,
-    };
-  }
+const SUPPORTED_FORMATS_MAP = {
+  yaml: yamlParse,
+  json: JSON.parse,
+  ini: iniParse,
 };
 
-export default (fileContent, fileFormat) => {
-  const {
-    contentAsJSON: fileContentAsJSON,
-    contentAsJSONError: fileContentJSONError,
-  } = getContentAsJSON(fileContent, fileFormat);
+export const getParserByFormat = (format) => SUPPORTED_FORMATS_MAP[format];
 
-  return {
-    fileContentAsJSON,
-    fileContentJSONError,
-  };
+export default (content, format) => {
+  const parser = getParserByFormat(format);
+  return parser(content);
 };
