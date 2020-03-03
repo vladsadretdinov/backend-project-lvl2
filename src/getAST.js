@@ -1,26 +1,26 @@
 /* eslint-disable no-param-reassign */
 
-import { has as _has, reduce as _reduce } from 'lodash';
+import { has, reduce } from 'lodash';
 
-const getAST = (firstJSON, secondJSON) => {
-  const mergedJSON = {
-    ...firstJSON,
-    ...secondJSON,
+const getAST = (firstObj, secondObj) => {
+  const mergedObj = {
+    ...firstObj,
+    ...secondObj,
   };
-  const result = _reduce(
-    mergedJSON,
+  const result = reduce(
+    mergedObj,
     (acc, value, key) => {
-      if (_has(firstJSON, key) && _has(secondJSON, key)) {
-        if (typeof value === typeof firstJSON[key] && typeof value === 'object') {
+      if (has(firstObj, key) && has(secondObj, key)) {
+        if (typeof value === typeof firstObj[key] && typeof value === 'object') {
           acc.push({
             key,
             state: 'same',
-            value: getAST(firstJSON[key], value),
+            value: getAST(firstObj[key], value),
           });
           return acc;
         }
-        if (typeof value !== 'object' && typeof firstJSON[key] !== 'object') {
-          if (value === firstJSON[key]) {
+        if (typeof value !== 'object' && typeof firstObj[key] !== 'object') {
+          if (value === firstObj[key]) {
             acc.push({
               key,
               state: 'same',
@@ -32,12 +32,12 @@ const getAST = (firstJSON, secondJSON) => {
         acc.push({
           key,
           state: 'changed',
-          beforeValue: firstJSON[key],
+          beforeValue: firstObj[key],
           afterValue: value,
         });
         return acc;
       }
-      if (_has(secondJSON, key)) {
+      if (has(secondObj, key)) {
         acc.push({
           key,
           state: 'added',

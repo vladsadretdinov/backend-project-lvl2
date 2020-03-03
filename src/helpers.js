@@ -1,16 +1,13 @@
-import { readFileSync as fsReadFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import {
-  join as pathJoin,
-  dirname as pathDirname,
-  basename as pathBasename,
-  extname as pathExtname,
+  join, dirname, basename, extname,
 } from 'path';
 
-export const readFile = (pathToFile) => fsReadFileSync(pathToFile, 'utf8');
+export const readFile = (pathToFile) => readFileSync(pathToFile, 'utf8');
 
-export const createFullFilePath = (pathToFile) => pathJoin(
-  pathDirname(pathToFile),
-  pathBasename(pathToFile),
+export const createFullFilePath = (pathToFile) => join(
+  dirname(pathToFile),
+  basename(pathToFile),
 );
 
-export const getFileFormat = (filePath) => pathExtname(filePath).substring(1);
+export const getFileFormat = (filePath) => extname(filePath).substring(1);

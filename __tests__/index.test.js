@@ -10,9 +10,9 @@ describe('Valid input data => good result', () => {
     ['before.json', 'after.yaml', 'standard', 'result-standard-formatter'],
     ['before.yaml', 'after.ini', 'json', 'result-json-formatter'],
     ['before.ini', 'after.json', 'plain', 'result-plain-formatter'],
-  ])('genDiff(%s, %s, %s format output) create expected result', (firstFile, secondFile, outputFormat, expectedExpression) => {
+  ])('genDiff(%s, %s, %s format output) create expected result', (firstFilePath, secondFilePath, outputFormat, expectedExpression) => {
     expect(
-      genDiff(getFixturePath(firstFile), getFixturePath(secondFile), outputFormat),
+      genDiff(getFixturePath(firstFilePath), getFixturePath(secondFilePath), outputFormat),
     ).toEqual(readFile(expectedExpression));
   });
 });
@@ -25,9 +25,9 @@ describe('Invalid input data => error message', () => {
     ['invalid_input.json', 'after.json', 'standard'],
     ['invalid_extension.txt', 'after.json', 'plain'],
     ['not_exsisting.json', 'after.json', 'plain'],
-  ])('genDiff(%s, %s, %s format output) create exception', (firstFile, secondFile, outputFormat) => {
+  ])('genDiff(%s, %s, %s format output) create exception', (firstFilePath, secondFilePath, outputFormat) => {
     expect(() => {
-      genDiff(getFixturePath(firstFile), getFixturePath(secondFile), outputFormat);
+      genDiff(getFixturePath(firstFilePath), getFixturePath(secondFilePath), outputFormat);
     }).toThrow();
   });
 });

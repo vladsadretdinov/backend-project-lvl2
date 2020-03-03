@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 
-import { forEach as _forEach } from 'lodash';
+import { forEach } from 'lodash';
 
 export default (_ast) => {
   const TAB_SIZE = 4;
@@ -13,7 +13,7 @@ export default (_ast) => {
         // eslint-disable-next-line no-use-before-define
         str += render(value, tabs + TAB_SIZE);
       } else {
-        _forEach(value, (v, k) => {
+        forEach(value, (v, k) => {
           str += `\n${' '.repeat(tabs + TAB_SIZE)}${k}: ${v}`;
         });
       }

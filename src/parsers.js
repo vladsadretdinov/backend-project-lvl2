@@ -1,15 +1,15 @@
-import { safeLoad as yamlParse } from 'js-yaml';
-import { parse as iniParse } from 'ini';
+import { safeLoad } from 'js-yaml';
+import { parse } from 'ini';
 
 const SUPPORTED_FORMATS_MAP = {
-  yaml: yamlParse,
+  yaml: safeLoad,
   json: JSON.parse,
-  ini: iniParse,
+  ini: parse,
 };
 
 export const getParserByFormat = (format) => SUPPORTED_FORMATS_MAP[format];
 
 export default (content, format) => {
-  const parser = getParserByFormat(format);
-  return parser(content);
+  const parseFunc = getParserByFormat(format);
+  return parseFunc(content);
 };

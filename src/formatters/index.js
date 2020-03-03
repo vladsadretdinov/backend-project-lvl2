@@ -1,4 +1,4 @@
-import { has as _has } from 'lodash';
+import { has } from 'lodash';
 import standard from './standard';
 import plain from './plain';
 import json from './json';
@@ -11,6 +11,6 @@ const SUPPORTED_OUTPUT_FORMATS_MAP = {
   plain,
 };
 
-export const isValidFormat = (format) => format !== 'true' && _has(SUPPORTED_OUTPUT_FORMATS_MAP, format);
+export const isValidFormat = (format) => format !== 'true' && has(SUPPORTED_OUTPUT_FORMATS_MAP, format);
 
 export default (format) => SUPPORTED_OUTPUT_FORMATS_MAP[format];

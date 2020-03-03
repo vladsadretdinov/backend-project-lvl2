@@ -1,5 +1,5 @@
 import getRenderStyle from './formatters';
-import parseFileAsJSON from './parsers';
+import parseFile from './parsers';
 import { readFile, getFileFormat, createFullFilePath } from './helpers';
 import getAST from './getAST';
 
@@ -10,12 +10,12 @@ export default (firstConfigPath, secondConfigPath, outputFormat) => {
   const firstFileContent = readFile(createFullFilePath(firstConfigPath));
   const secondFileContent = readFile(createFullFilePath(secondConfigPath));
 
-  const firstFileContentAsJSON = parseFileAsJSON(firstFileContent, firstFileFormat);
-  const secondFileContentAsJSON = parseFileAsJSON(secondFileContent, secondFileFormat);
+  const firstFileContentAsObj = parseFile(firstFileContent, firstFileFormat);
+  const secondFileContentAsObj = parseFile(secondFileContent, secondFileFormat);
 
-  const ast = getAST(firstFileContentAsJSON, secondFileContentAsJSON);
+  const ast = getAST(firstFileContentAsObj, secondFileContentAsObj);
 
-  const render = getRenderStyle(outputFormat);
+  const renderFunc = getRenderStyle(outputFormat);
 
-  return render(ast);
+  return renderFunc(ast);
 };
