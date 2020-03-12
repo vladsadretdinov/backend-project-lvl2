@@ -1,12 +1,12 @@
 import { has } from 'lodash';
-import standard from './standard';
+import pretty from './pretty';
 import plain from './plain';
 import json from './json';
 
 const SUPPORTED_OUTPUT_FORMATS_MAP = {
-  true: standard,
-  undefined: standard,
-  standard,
+  true: pretty,
+  undefined: pretty,
+  pretty,
   json,
   plain,
 };

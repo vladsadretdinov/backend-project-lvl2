@@ -1,13 +1,10 @@
-import { has, union } from 'lodash';
-
-const isTypeTypesBothEqualAndObject = (firstType, secondType) => firstType === secondType && firstType === 'object';
-const areValuesEqual = (firstValue, secondValue) => firstValue === secondValue;
+import {
+  has, union, keys, isObject, isEqual,
+} from 'lodash';
 
 const getAST = (firstObj, secondObj) => {
-  const mergedKeys = union(
-    Object.keys(firstObj),
-    Object.keys(secondObj),
-  );
+  const mergedKeys = union(keys(firstObj), keys(secondObj));
+
   const ast = mergedKeys.map((key) => {
     const isFirstObjHasKey = has(firstObj, key);
     const isSecondObjHasKey = has(secondObj, key);
@@ -15,23 +12,23 @@ const getAST = (firstObj, secondObj) => {
     if (isFirstObjHasKey && isSecondObjHasKey) {
       const firstValue = firstObj[key];
       const secondValue = secondObj[key];
-      const firstValueType = typeof firstValue;
-      const secondValueType = typeof secondValue;
 
-      if (isTypeTypesBothEqualAndObject(firstValueType, secondValueType)) {
+      if (isObject(firstValue) && isObject(secondValue)) {
         return {
           key,
-          state: 'same',
-          value: getAST(firstValue, secondValue),
+          state: 'remained',
+          children: getAST(firstValue, secondValue),
         };
       }
-      if (areValuesEqual(firstValue, secondValue)) {
+
+      if (isEqual(firstValue, secondValue)) {
         return {
           key,
-          state: 'same',
+          state: 'remained',
           value: firstValue,
         };
       }
+
       return {
         key,
         state: 'changed',
@@ -39,12 +36,22 @@ const getAST = (firstObj, secondObj) => {
         afterValue: secondValue,
       };
     }
+
+    if (isSecondObjHasKey) {
+      return {
+        key,
+        state: 'added',
+        value: secondObj[key],
+      };
+    }
+
     return {
       key,
-      state: isSecondObjHasKey ? 'added' : 'deleted',
-      value: isSecondObjHasKey ? secondObj[key] : firstObj[key],
+      state: 'deleted',
+      value: firstObj[key],
     };
   });
+
   return ast;
 };
 

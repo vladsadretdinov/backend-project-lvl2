@@ -1,5 +1,5 @@
 import getRenderStyle from './formatters';
-import parseFile from './parsers';
+import parseContent from './parsers';
 import { readFile, getFileFormat, createFullFilePath } from './helpers';
 import getAST from './getAST';
 
@@ -10,8 +10,8 @@ export default (firstConfigPath, secondConfigPath, outputFormat) => {
   const firstFileContent = readFile(createFullFilePath(firstConfigPath));
   const secondFileContent = readFile(createFullFilePath(secondConfigPath));
 
-  const firstFileContentAsObj = parseFile(firstFileContent, firstFileFormat);
-  const secondFileContentAsObj = parseFile(secondFileContent, secondFileFormat);
+  const firstFileContentAsObj = parseContent(firstFileContent, firstFileFormat);
+  const secondFileContentAsObj = parseContent(secondFileContent, secondFileFormat);
 
   const ast = getAST(firstFileContentAsObj, secondFileContentAsObj);
 

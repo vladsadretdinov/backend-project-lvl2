@@ -1,43 +1,39 @@
-/* eslint-disable no-param-reassign */
+import { has, isObject, isString } from 'lodash';
 
-export default (_ast) => {
-  const renderHelper = (value) => {
-    if (typeof value === 'object') {
-      return '[complex value]';
-    } if (typeof value === 'string') {
-      return `'${value}'`;
-    }
-    return `${value}`;
-  };
-
-  const render = (ast, parent) => ast.reduce((acc, element) => {
-    const value = renderHelper(element.value);
-    const beforeValue = renderHelper(element.beforeValue);
-    const afterValue = renderHelper(element.afterValue);
-
-    switch (element.state) {
-      case 'changed':
-        acc += `Property '${parent}${element.key}' was changed from ${beforeValue} to ${afterValue}`;
-        acc += '\n';
-        break;
-      case 'deleted':
-        acc += `Property '${parent}${element.key}' was deleted`;
-        acc += '\n';
-        break;
-      case 'added':
-        acc += `Property '${parent}${element.key}' was added with value: ${value}`;
-        acc += '\n';
-        break;
-      default:
-        acc += `Property '${parent}${element.key}' was remained`;
-        acc += '\n';
-        if (typeof element.value === 'object') {
-          acc += render(element.value, `${parent}${element.key}.`);
-        }
-        break;
-    }
-    return acc;
-  }, '');
-
-  return `${render(_ast, '').slice(0, -1)}`;
+const helperFunc = (value) => {
+  if (isObject(value)) {
+    return '[complex value]';
+  }
+  if (isString(value)) {
+    return `'${value}'`;
+  }
+  return `${value}`;
 };
+
+const render = (ast, parent) => ast.reduce((acc, element) => {
+  const {
+    state, key, beforeValue, value, afterValue, children,
+  } = element;
+
+  switch (state) {
+    case 'changed':
+      acc.push(`Property '${parent}${key}' was changed from ${helperFunc(beforeValue)} to ${helperFunc(afterValue)}\n`);
+      break;
+    case 'deleted':
+      acc.push(`Property '${parent}${key}' was deleted\n`);
+      break;
+    case 'added':
+      acc.push(`Property '${parent}${key}' was added with value: ${helperFunc(value)}\n`);
+      break;
+    default:
+      // ~ case 'remained'
+      acc.push(`Property '${parent}${key}' was remained\n`);
+      if (has(element, 'children')) {
+        acc.push(render(children, `${parent}${key}.`));
+      }
+      break;
+  }
+  return acc;
+}, []).join('');
+
+export default (ast) => `${render(ast, '').slice(0, -1)}`;
