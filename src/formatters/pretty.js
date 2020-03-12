@@ -1,57 +1,52 @@
-import { forEach, isObject, has } from 'lodash';
+import { forEach, isObject, flattenDeep } from 'lodash';
 
 const TAB_SIZE = 4;
 
+const transformValueToPrintFormat = (sign, key, value, tabs) => {
+  const printArray = [];
+  if (!isObject(value)) {
+    printArray.push(`${' '.repeat(tabs - 2)}${sign} ${key}: ${value}`);
+  } else {
+    printArray.push(`${' '.repeat(tabs - 2)}${sign} ${key}: {`);
+    forEach(value, (_value_, _key_) => {
+      printArray.push(`${' '.repeat(tabs + TAB_SIZE)}${_key_}: ${_value_}`);
+    });
+    printArray.push(`${' '.repeat(tabs)}}`);
+  }
+  return printArray;
+};
+
 const render = (ast, tabs = TAB_SIZE) => {
-  const helperFunc = (sign, key, value) => {
-    const result = [];
-
-    result.push(`\n${' '.repeat(tabs - 2)}${sign} ${key}: `);
-
-    if (!isObject(value)) {
-      result.push(`${value}`);
-      return result.join('');
-    }
-
-    result.push('{');
-    if (sign === ' ') {
-      result.push(render(value, tabs + TAB_SIZE));
-    } else {
-      forEach(value, (v, k) => {
-        result.push(`\n${' '.repeat(tabs + TAB_SIZE)}${k}: ${v}`);
-      });
-    }
-    result.push(`\n${' '.repeat(tabs)}}`);
-
-    return result.join('');
-  };
-
-  return ast.reduce((acc, element) => {
+  const result = ast.reduce((acc, element) => {
     const {
       state, key, beforeValue, value, afterValue, children,
     } = element;
     switch (state) {
       case 'changed':
-        acc.push(helperFunc('-', key, beforeValue, tabs));
-        acc.push(helperFunc('+', key, afterValue, tabs));
+        acc.push(transformValueToPrintFormat('-', key, beforeValue, tabs));
+        acc.push(transformValueToPrintFormat('+', key, afterValue, tabs));
         break;
       case 'deleted':
-        acc.push(helperFunc('-', key, value, tabs));
+        acc.push(transformValueToPrintFormat('-', key, value, tabs));
         break;
       case 'added':
-        acc.push(helperFunc('+', key, value, tabs));
+        acc.push(transformValueToPrintFormat('+', key, value, tabs));
+        break;
+      case 'remained':
+        acc.push(transformValueToPrintFormat(' ', key, value, tabs));
+        break;
+      case 'nested':
+        acc.push(`${' '.repeat(tabs - 2)}  ${key}: {`);
+        acc.push(render(children, tabs + TAB_SIZE));
+        acc.push(`${' '.repeat(tabs)}}`);
         break;
       default:
-        // ~ case 'remained'
-        if (has(element, 'children')) {
-          acc.push(helperFunc(' ', key, children, tabs));
-        } else {
-          acc.push(helperFunc(' ', key, value, tabs));
-        }
         break;
     }
     return acc;
-  }, []).join('');
+  }, []);
+
+  return flattenDeep(result).join('\n');
 };
 
-export default (ast) => `{${render(ast)}\n}`;
+export default (ast) => `{\n${render(ast)}\n}`;

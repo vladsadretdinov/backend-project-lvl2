@@ -1,16 +1,14 @@
 import { has } from 'lodash';
 import pretty from './pretty';
 import plain from './plain';
-import json from './json';
 
 const SUPPORTED_OUTPUT_FORMATS_MAP = {
-  true: pretty,
-  undefined: pretty,
+  json: JSON.stringify,
   pretty,
-  json,
   plain,
 };
 
-export const isValidFormat = (format) => format !== 'true' && has(SUPPORTED_OUTPUT_FORMATS_MAP, format);
+export const isValidFormat = (format) => has(SUPPORTED_OUTPUT_FORMATS_MAP, format)
+  || format === undefined;
 
 export default (format) => SUPPORTED_OUTPUT_FORMATS_MAP[format];

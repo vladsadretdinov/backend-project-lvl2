@@ -16,7 +16,7 @@ const getAST = (firstObj, secondObj) => {
       if (isObject(firstValue) && isObject(secondValue)) {
         return {
           key,
-          state: 'remained',
+          state: 'nested',
           children: getAST(firstValue, secondValue),
         };
       }

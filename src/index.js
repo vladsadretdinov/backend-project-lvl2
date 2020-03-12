@@ -3,7 +3,7 @@ import parseContent from './parsers';
 import { readFile, getFileFormat, createFullFilePath } from './helpers';
 import getAST from './getAST';
 
-export default (firstConfigPath, secondConfigPath, outputFormat) => {
+export default (firstConfigPath, secondConfigPath, outputFormat = 'pretty') => {
   const firstFileFormat = getFileFormat(firstConfigPath);
   const secondFileFormat = getFileFormat(secondConfigPath);
 

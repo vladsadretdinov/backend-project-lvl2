@@ -14,6 +14,7 @@ program
   .action((firstConfigPath, secondConfigPath, cmdObj) => {
     if (!isValidFormat(cmdObj.format)) {
       console.log(`Invalid option "-f ${cmdObj.format}", please retry!`);
+      process.exit();
     }
     console.log(genDiff(firstConfigPath, secondConfigPath, cmdObj.format));
   });
