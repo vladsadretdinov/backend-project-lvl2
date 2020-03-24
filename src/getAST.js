@@ -5,39 +5,19 @@ import {
 const getAST = (firstObj, secondObj) => {
   const mergedKeys = union(keys(firstObj), keys(secondObj));
 
-  const ast = mergedKeys.map((key) => {
-    const isFirstObjHasKey = has(firstObj, key);
-    const isSecondObjHasKey = has(secondObj, key);
+  return mergedKeys.map((key) => {
+    const firstValue = firstObj[key];
+    const secondValue = secondObj[key];
 
-    if (isFirstObjHasKey && isSecondObjHasKey) {
-      const firstValue = firstObj[key];
-      const secondValue = secondObj[key];
-
-      if (isObject(firstValue) && isObject(secondValue)) {
-        return {
-          key,
-          state: 'nested',
-          children: getAST(firstValue, secondValue),
-        };
-      }
-
-      if (isEqual(firstValue, secondValue)) {
-        return {
-          key,
-          state: 'remained',
-          value: firstValue,
-        };
-      }
-
+    if (!has(secondObj, key)) {
       return {
         key,
-        state: 'changed',
-        beforeValue: firstValue,
-        afterValue: secondValue,
+        state: 'deleted',
+        value: firstObj[key],
       };
     }
 
-    if (isSecondObjHasKey) {
+    if (!has(firstObj, key)) {
       return {
         key,
         state: 'added',
@@ -45,14 +25,29 @@ const getAST = (firstObj, secondObj) => {
       };
     }
 
+    if (isObject(firstValue) && isObject(secondValue)) {
+      return {
+        key,
+        state: 'nested',
+        children: getAST(firstValue, secondValue),
+      };
+    }
+
+    if (isEqual(firstValue, secondValue)) {
+      return {
+        key,
+        state: 'remained',
+        value: firstValue,
+      };
+    }
+
     return {
       key,
-      state: 'deleted',
-      value: firstObj[key],
+      state: 'changed',
+      beforeValue: firstValue,
+      afterValue: secondValue,
     };
   });
-
-  return ast;
 };
 
 export default getAST;

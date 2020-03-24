@@ -9,7 +9,7 @@ const program = commander;
 program
   .version('0.1.0')
   .description('Compares two configuration files and shows a difference.')
-  .option('-f, --format [type]', 'output format')
+  .option('-f, --format [type]', 'output format', 'pretty')
   .arguments('<firstConfig> <secondConfig>')
   .action((firstConfigPath, secondConfigPath, cmdObj) => {
     if (!isValidFormat(cmdObj.format)) {

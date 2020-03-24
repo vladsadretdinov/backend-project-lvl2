@@ -1,6 +1,6 @@
 import { isObject, isString } from 'lodash';
 
-const getValueInPrintFormat = (value) => {
+const transformValueToPrintFormat = (value) => {
   if (isObject(value)) {
     return '[complex value]';
   }
@@ -10,32 +10,25 @@ const getValueInPrintFormat = (value) => {
   return `${value}`;
 };
 
-const render = (ast, parent) => ast.reduce((acc, element) => {
+const render = (ast, parent = '') => ast.reduce((acc, element) => {
   const {
     state, key, beforeValue, value, afterValue, children,
   } = element;
 
   switch (state) {
     case 'changed':
-      acc.push(`Property '${parent}${key}' was changed from ${getValueInPrintFormat(beforeValue)} to ${getValueInPrintFormat(afterValue)}`);
-      break;
+      return [...acc, `Property '${parent}${key}' was changed from ${transformValueToPrintFormat(beforeValue)} to ${transformValueToPrintFormat(afterValue)}`];
     case 'deleted':
-      acc.push(`Property '${parent}${key}' was deleted`);
-      break;
+      return [...acc, `Property '${parent}${key}' was deleted`];
     case 'added':
-      acc.push(`Property '${parent}${key}' was added with value: ${getValueInPrintFormat(value)}`);
-      break;
+      return [...acc, `Property '${parent}${key}' was added with value: ${transformValueToPrintFormat(value)}`];
     case 'remained':
-      acc.push(`Property '${parent}${key}' was remained`);
-      break;
+      return [...acc, `Property '${parent}${key}' was remained`];
     case 'nested':
-      acc.push(`Property '${parent}${key}' was remained`);
-      acc.push(render(children, `${parent}${key}.`));
-      break;
+      return [...acc, `Property '${parent}${key}' was remained`, render(children, `${parent}${key}.`)];
     default:
-      break;
+      throw new Error(`Unknown state in AST! (key: '${key}', state: '${state}')`);
   }
-  return acc;
 }, []).join('\n');
 
-export default (ast) => `${render(ast, '')}`;
+export default (ast) => `${render(ast)}`;

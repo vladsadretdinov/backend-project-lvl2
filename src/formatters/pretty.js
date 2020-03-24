@@ -1,51 +1,43 @@
-import { forEach, isObject, flattenDeep } from 'lodash';
+import { isObject, flattenDeep, map } from 'lodash';
 
 const TAB_SIZE = 4;
 
-const transformValueToPrintFormat = (sign, key, value, tabs) => {
-  const printArray = [];
+const transformValueToPrintFormat = (sign, key, value, depth) => {
   if (!isObject(value)) {
-    printArray.push(`${' '.repeat(tabs - 2)}${sign} ${key}: ${value}`);
-  } else {
-    printArray.push(`${' '.repeat(tabs - 2)}${sign} ${key}: {`);
-    forEach(value, (_value_, _key_) => {
-      printArray.push(`${' '.repeat(tabs + TAB_SIZE)}${_key_}: ${_value_}`);
-    });
-    printArray.push(`${' '.repeat(tabs)}}`);
+    return `${' '.repeat(depth * TAB_SIZE - 2)}${sign} ${key}: ${value}`;
   }
-  return printArray;
+  return [
+    `${' '.repeat(depth * TAB_SIZE - 2)}${sign} ${key}: {`,
+    map(value, (objValue, objKey) => `${' '.repeat(depth * TAB_SIZE + TAB_SIZE)}${objKey}: ${objValue}`),
+    `${' '.repeat(depth * TAB_SIZE)}}`,
+  ];
 };
 
-const render = (ast, tabs = TAB_SIZE) => {
+const render = (ast, depth = 1) => {
   const result = ast.reduce((acc, element) => {
     const {
       state, key, beforeValue, value, afterValue, children,
     } = element;
     switch (state) {
       case 'changed':
-        acc.push(transformValueToPrintFormat('-', key, beforeValue, tabs));
-        acc.push(transformValueToPrintFormat('+', key, afterValue, tabs));
-        break;
+        return [...acc, transformValueToPrintFormat('-', key, beforeValue, depth), transformValueToPrintFormat('+', key, afterValue, depth)];
       case 'deleted':
-        acc.push(transformValueToPrintFormat('-', key, value, tabs));
-        break;
+        return [...acc, transformValueToPrintFormat('-', key, value, depth)];
       case 'added':
-        acc.push(transformValueToPrintFormat('+', key, value, tabs));
-        break;
+        return [...acc, transformValueToPrintFormat('+', key, value, depth)];
       case 'remained':
-        acc.push(transformValueToPrintFormat(' ', key, value, tabs));
-        break;
+        return [...acc, transformValueToPrintFormat(' ', key, value, depth)];
       case 'nested':
-        acc.push(`${' '.repeat(tabs - 2)}  ${key}: {`);
-        acc.push(render(children, tabs + TAB_SIZE));
-        acc.push(`${' '.repeat(tabs)}}`);
-        break;
+        return [
+          ...acc,
+          `${' '.repeat(depth * TAB_SIZE - 2)}  ${key}: {`,
+          render(children, depth + 1),
+          `${' '.repeat(depth * TAB_SIZE)}}`,
+        ];
       default:
-        break;
+        throw new Error(`Unknown state in AST! (key: '${key}', state:'${state}')`);
     }
-    return acc;
   }, []);
-
   return flattenDeep(result).join('\n');
 };
 

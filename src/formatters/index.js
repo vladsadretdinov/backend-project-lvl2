@@ -8,7 +8,6 @@ const SUPPORTED_OUTPUT_FORMATS_MAP = {
   plain,
 };
 
-export const isValidFormat = (format) => has(SUPPORTED_OUTPUT_FORMATS_MAP, format)
-  || format === undefined;
+export const isValidFormat = (format) => has(SUPPORTED_OUTPUT_FORMATS_MAP, format);
 
 export default (format) => SUPPORTED_OUTPUT_FORMATS_MAP[format];
