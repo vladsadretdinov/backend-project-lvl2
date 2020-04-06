@@ -14,22 +14,21 @@ const transformValueToPrintFormat = (sign, key, value, depth) => {
 };
 
 const render = (ast, depth = 1) => {
-  const result = ast.reduce((acc, element) => {
+  const result = ast.map((element) => {
     const {
       state, key, beforeValue, value, afterValue, children,
     } = element;
     switch (state) {
       case 'changed':
-        return [...acc, transformValueToPrintFormat('-', key, beforeValue, depth), transformValueToPrintFormat('+', key, afterValue, depth)];
+        return [transformValueToPrintFormat('-', key, beforeValue, depth), transformValueToPrintFormat('+', key, afterValue, depth)];
       case 'deleted':
-        return [...acc, transformValueToPrintFormat('-', key, value, depth)];
+        return transformValueToPrintFormat('-', key, value, depth);
       case 'added':
-        return [...acc, transformValueToPrintFormat('+', key, value, depth)];
+        return transformValueToPrintFormat('+', key, value, depth);
       case 'remained':
-        return [...acc, transformValueToPrintFormat(' ', key, value, depth)];
+        return transformValueToPrintFormat(' ', key, value, depth);
       case 'nested':
         return [
-          ...acc,
           `${' '.repeat(depth * TAB_SIZE - 2)}  ${key}: {`,
           render(children, depth + 1),
           `${' '.repeat(depth * TAB_SIZE)}}`,
@@ -37,7 +36,7 @@ const render = (ast, depth = 1) => {
       default:
         throw new Error(`Unknown state in AST! (key: '${key}', state:'${state}')`);
     }
-  }, []);
+  });
   return flattenDeep(result).join('\n');
 };
 
